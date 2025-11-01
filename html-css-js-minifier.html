@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced HTML/CSS/JS Minifier</title>
+
+  <!-- CodeMirror Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
+
+  <style>
+    :root {
+      --primary: #007bff;
+      --bg-light: #f4f9ff;
+      --bg-dark: #121212;
+      --text-light: #fff;
+      --text-dark: #222;
+      --card-light: #fff;
+      --card-dark: #1e1e1e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    h1 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .container {
+      background: var(--card-light);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 95%;
+      max-width: 900px;
+      transition: all 0.3s ease;
+    }
+
+    body.dark .container {
+      background: var(--card-dark);
+      box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+    }
+
+    .CodeMirror {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      height: 300px;
+      font-size: 15px;
+    }
+
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: white;
+      background: var(--primary);
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .mode-toggle {
+      background: transparent;
+      border: 1px solid #ccc;
+      color: inherit;
+    }
+
+    .mode-toggle:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .output {
+      margin-top: 20px;
+    }
+
+    #outputArea {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+      min-height: 150px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>⚙️ Advanced HTML / CSS / JS Minifier</h1>
+
+  <div class="container">
+    <textarea id="inputArea"></textarea>
+
+    <div class="actions">
+      <button onclick="minifyCode()">⚡ Minify Code</button>
+      <button onclick="copyOutput()">📋 Copy</button>
+      <button onclick="downloadOutput()">💾 Download</button>
+      <button class="mode-toggle" onclick="toggleMode()">🌗 Toggle Theme</button>
+    </div>
+
+    <div class="output">
+      <h3>Minified Code:</h3>
+      <pre id="outputArea"></pre>
+    </div>
+  </div>
+
+  <div class="footer">Built with ❤️ by ChatGPT — Smart Code Minifier</div>
+
+  <!-- CodeMirror Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+
+  <script>
+    // Initialize CodeMirror editor
+    let editor = CodeMirror.fromTextArea(document.getElementById("inputArea"), {
+      lineNumbers: true,
+      mode: "htmlmixed",
+      theme: "eclipse",
+      tabSize: 2,
+    });
+
+    // Minify functions
+    function minifyHTML(html) {
+      return html.replace(/<!--[\s\S]*?-->/g, '')
+                 .replace(/\s{2,}/g, ' ')
+                 .replace(/>\s+</g, '><')
+                 .trim();
+    }
+
+    function minifyCSS(css) {
+      return css.replace(/\/\*[\s\S]*?\*\//g, '')
+                .replace(/\s{2,}/g, ' ')
+                .replace(/\s*([{}:;,])\s*/g, '$1')
+                .replace(/;}/g, '}')
+                .trim();
+    }
+
+    function minifyJS(js) {
+      return js.replace(/\/\/[^\n]*\n/g, '')
+               .replace(/\/\*[\s\S]*?\*\//g, '')
+               .replace(/\s{2,}/g, ' ')
+               .replace(/\s*([=+\-*/{}();,:<>])\s*/g, '$1')
+               .trim();
+    }
+
+    function detectLanguage(code) {
+      if (code.includes("<html") || code.includes("<!DOCTYPE")) return "htmlmixed";
+      if (code.includes("{") && code.includes("}")) return "css";
+      if (code.includes("function") || code.includes("=>") || code.includes("var")) return "javascript";
+      return "htmlmixed";
+    }
+
+    function minifyCode() {
+      const input = editor.getValue().trim();
+      const output = document.getElementById("outputArea");
+
+      if (!input) {
+        output.textContent = "⚠️ Please enter some code!";
+        return;
+      }
+
+      let minified = input;
+      const lang = detectLanguage(input);
+      if (lang === "htmlmixed") minified = minifyHTML(input);
+      else if (lang === "css") minified = minifyCSS(input);
+      else if (lang === "javascript") minified = minifyJS(input);
+
+      output.textContent = minified;
+    }
+
+    function copyOutput() {
+      const output = document.getElementById("outputArea").textContent;
+      if (!output) return alert("No code to copy!");
+      navigator.clipboard.writeText(output);
+      alert("✅ Minified code copied!");
+    }
+
+    function downloadOutput() {
+      const output = document.getElementById("outputArea").textContent;
+      if (!output) return alert("No code to download!");
+      const blob = new Blob([output], { type: "text/plain" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "minified-code.txt";
+      link.click();
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      editor.setOption("theme", isDark ? "dracula" : "eclipse");
+    }
+  </script>
+</body>
+</html>
