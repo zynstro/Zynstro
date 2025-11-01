@@ -1,13 +1,12 @@
-  
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Currency Converter</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", Arial, sans-serif;
       background: #f4faff;
       display: flex;
       justify-content: center;
@@ -19,100 +18,195 @@
     .container {
       background: #fff;
       padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0, 123, 255, 0.15);
       text-align: center;
       width: 90%;
-      max-width: 450px;
+      max-width: 480px;
     }
 
     h1 {
       color: #007bff;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-size: 28px;
     }
 
     input, select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 10px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    .swap-btn {
+      background: #e6f0ff;
+      border: none;
+      color: #007bff;
+      font-size: 18px;
+      padding: 8px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: 0.3s;
+    }
+
+    .swap-btn:hover {
+      background: #007bff;
+      color: #fff;
     }
 
     button {
       background-color: #007bff;
       color: #fff;
-      padding: 12px 20px;
+      padding: 12px;
       border: none;
       font-size: 16px;
       border-radius: 10px;
       cursor: pointer;
       width: 100%;
+      transition: all 0.3s ease;
     }
 
     button:hover {
       background-color: #0056b3;
+      transform: scale(1.03);
     }
 
     .result {
       margin-top: 20px;
       font-weight: bold;
       font-size: 18px;
+      color: #333;
+    }
+
+    .history {
+      margin-top: 25px;
+      text-align: left;
+      font-size: 15px;
+      color: #444;
+      background: #f9fbff;
+      border-radius: 10px;
+      padding: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+
+    .history p {
+      margin: 6px 0;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 24px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Currency Converter</h1>
-    <input type="number" id="amount" placeholder="Enter amount" />
-    
-    <select id="fromCurrency">
-      <option value="USD">USD - US Dollar</option>
-      <option value="INR">INR - Indian Rupee</option>
-      <option value="EUR">EUR - Euro</option>
-    </select>
+    <h1>💱 Currency Converter</h1>
 
-    <select id="toCurrency">
-      <option value="INR">INR - Indian Rupee</option>
-      <option value="USD">USD - US Dollar</option>
-      <option value="EUR">EUR - Euro</option>
-    </select>
+    <input type="number" id="amount" placeholder="Enter amount" />
+
+    <select id="fromCurrency"></select>
+
+    <button class="swap-btn" id="swapBtn">🔁 Swap</button>
+
+    <select id="toCurrency"></select>
 
     <button onclick="convertCurrency()">Convert</button>
 
     <div class="result" id="result"></div>
+
+    <div class="history" id="history">
+      <h3 style="color:#007bff; font-size:17px;">Recent Conversions</h3>
+      <div id="historyList"></div>
+    </div>
   </div>
 
   <script>
-    // Fixed exchange rates
-    const exchangeRates = {
-      USD: { USD: 1, INR: 83.2, EUR: 0.92 },
-      INR: { USD: 0.012, INR: 1, EUR: 0.011 },
-      EUR: { USD: 1.09, INR: 90.5, EUR: 1 }
-    };
+    const fromCurrency = document.getElementById("fromCurrency");
+    const toCurrency = document.getElementById("toCurrency");
+    const historyList = document.getElementById("historyList");
 
-    function convertCurrency() {
+    // Load currencies dynamically
+    async function loadCurrencies() {
+      const res = await fetch("https://api.exchangerate.host/symbols");
+      const data = await res.json();
+      const symbols = data.symbols;
+
+      for (let code in symbols) {
+        const option1 = new Option(`${code} - ${symbols[code].description}`, code);
+        const option2 = new Option(`${code} - ${symbols[code].description}`, code);
+        fromCurrency.appendChild(option1);
+        toCurrency.appendChild(option2);
+      }
+
+      // Default selections
+      fromCurrency.value = "USD";
+      toCurrency.value = "PKR";
+    }
+
+    loadCurrencies();
+
+    // Swap currencies
+    document.getElementById("swapBtn").addEventListener("click", () => {
+      [fromCurrency.value, toCurrency.value] = [toCurrency.value, fromCurrency.value];
+    });
+
+    // Convert Currency (Live API)
+    async function convertCurrency() {
       const amount = parseFloat(document.getElementById("amount").value);
-      const from = document.getElementById("fromCurrency").value;
-      const to = document.getElementById("toCurrency").value;
+      const from = fromCurrency.value;
+      const to = toCurrency.value;
 
       if (!amount || amount <= 0) {
-        document.getElementById("result").textContent = "Please enter a valid amount.";
+        document.getElementById("result").textContent = "⚠️ Please enter a valid amount.";
         return;
       }
 
-      const rate = exchangeRates[from][to];
-      const convertedAmount = (amount * rate).toFixed(2);
+      try {
+        const res = await fetch(`https://api.exchangerate.host/convert?from=${from}&to=${to}`);
+        const data = await res.json();
+        const rate = data.result;
+        const convertedAmount = (amount * rate).toFixed(2);
 
-      document.getElementById("result").textContent = 
-        `${amount} ${from} = ${convertedAmount} ${to}`;
+        const resultText = `${amount} ${from} = ${convertedAmount} ${to}`;
+        document.getElementById("result").textContent = resultText;
+
+        saveToHistory(resultText);
+      } catch (error) {
+        document.getElementById("result").textContent = "❌ Error fetching exchange rate.";
+      }
     }
+
+    // Save & Display Conversion History
+    function saveToHistory(entry) {
+      let history = JSON.parse(localStorage.getItem("currencyHistory")) || [];
+      history.unshift(entry); // add to top
+      if (history.length > 5) history.pop(); // keep only 5
+      localStorage.setItem("currencyHistory", JSON.stringify(history));
+      displayHistory();
+    }
+
+    function displayHistory() {
+      let history = JSON.parse(localStorage.getItem("currencyHistory")) || [];
+      historyList.innerHTML = history.map(item => `<p>• ${item}</p>`).join("");
+    }
+
+    displayHistory();
   </script>
 
 </body>
 </html>
-
-  
-  
