@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Advanced Unit Converter (Single File)</title>
+    
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --background-light: #f4f7f6;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --input-bg: #f8f9fa;
+            --shadow-subtle: 0 6px 20px rgba(0, 0, 0, 0.08);
+            --transition-speed: 0.2s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-subtle);
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .input-group, .select-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .input-group label {
+            width: 80px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        input, select {
+            flex-grow: 1;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            background-color: var(--input-bg);
+            transition: border-color var(--transition-speed);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
+        }
+        
+        #unitCategory {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Unit Converter</h2>
+        
+        <select id="unitCategory"></select>
+
+        <div class="input-group">
+            <label for="inputValue">Value:</label>
+            <input type="number" id="inputValue" placeholder="Enter value" value="1" />
+        </div>
+
+        <div class="select-group">
+            <label for="fromUnit">From:</label>
+            <select id="fromUnit"></select>
+        </div>
+
+        <div class="select-group">
+            <label for="toUnit">To:</label>
+            <select id="toUnit"></select>
+        </div>
+        
+        <div class="result" id="resultBox"></div>
+    </div>
+
+    <script>
+        // Data model for all conversions (from converter-logic.js)
+        const conversionData = {
+            length: {
+                baseUnit: 'meters',
+                units: {
+                    meters: { symbol: 'm', factor: 1 },
+                    kilometers: { symbol: 'km', factor: 1000 },
+                    feet: { symbol: 'ft', factor: 0.3048 },
+                    inches: { symbol: 'in', factor: 0.0254 },
+                    miles: { symbol: 'mi', factor: 1609.34 },
+                }
+            },
+            temperature: {
+                isSpecial: true,
+                baseUnit: 'celsius',
+                units: {
+                    celsius: { symbol: '°C' },
+                    fahrenheit: { symbol: '°F' },
+                    kelvin: { symbol: 'K' }
+                }
+            },
+            volume: {
+                baseUnit: 'liters',
+                units: {
+                    liters: { symbol: 'L', factor: 1 },
+                    milliliters: { symbol: 'mL', factor: 0.001 },
+                    gallons_us: { symbol: 'gal (US)', factor: 3.78541 },
+                    cubic_meters: { symbol: 'm³', factor: 1000 },
+                }
+            }
+        };
+
+        // DOM element references (from main.js)
+        const elements = {
+            category: document.getElementById("unitCategory"),
+            value: document.getElementById("inputValue"),
+            from: document.getElementById("fromUnit"),
+            to: document.getElementById("toUnit"),
+            resultBox: document.getElementById("resultBox"),
+        };
+
+        let currentCategory = 'length';
+
+        // Special conversion logic (from converter-logic.js)
+        function handleSpecialConversion(value, from, to) {
+            function toCelsius(unit, val) {
+                if (unit === 'celsius') return val;
+                if (unit === 'fahrenheit') return (val - 32) * 5 / 9;
+                if (unit === 'kelvin') return val - 273.15;
+                return 0;
+            }
+
+            function fromCelsius(unit, val) {
+                if (unit === 'celsius') return val;
+                if (unit === 'fahrenheit') return (val * 9 / 5) + 32;
+                if (unit === 'kelvin') return val + 273.15;
+                return 0;
+            }
+
+            const celsiusValue = toCelsius(from, value);
+            return fromCelsius(to, celsiusValue);
+        }
+
+        // Core conversion logic (merged from main.js and converter-logic.js)
+        function convertUnits() {
+            const categoryData = conversionData[currentCategory];
+            const value = parseFloat(elements.value.value);
+            const from = elements.from.value;
+            const to = elements.to.value;
+
+            if (isNaN(value)) {
+                elements.resultBox.textContent = "Please enter a valid number.";
+                return;
+            }
+            
+            let convertedValue;
+
+            if (categoryData.isSpecial) {
+                convertedValue = handleSpecialConversion(value, from, to);
+            } else {
+                const fromFactor = categoryData.units[from].factor;
+                const toFactor = categoryData.units[to].factor;
+                const baseUnitValue = value * fromFactor; 
+                convertedValue = baseUnitValue / toFactor;
+            }
+
+            const fromSymbol = categoryData.units[from].symbol || from;
+            const toSymbol = categoryData.units[to].symbol || to;
+
+            const formattedResult = convertedValue.toFixed(4).replace(/\.?0+$/, "");
+            elements.resultBox.textContent = `${value} ${fromSymbol} = ${formattedResult} ${toSymbol}`;
+        }
+        
+        // UI population functions (from main.js)
+        function populateCategorySelector() {
+            const categories = Object.keys(conversionData);
+            elements.category.innerHTML = categories.map(key => 
+                `<option value="${key}">${key.charAt(0).toUpperCase() + key.slice(1)}</option>`
+            ).join('');
+            
+            elements.category.value = currentCategory;
+            populateUnitSelectors();
+        }
+
+        function populateUnitSelectors() {
+            const units = conversionData[currentCategory].units;
+            const unitOptions = Object.keys(units).map(unitKey => 
+                `<option value="${unitKey}">${unitKey.replace(/_/g, ' ').toUpperCase()}</option>`
+            ).join('');
+
+            elements.from.innerHTML = unitOptions;
+            elements.to.innerHTML = unitOptions;
+            
+            convertUnits(); 
+        }
+
+        function handleCategoryChange(event) {
+            currentCategory = event.target.value;
+            populateUnitSelectors();
+        }
+
+        // Initialize and attach event listeners (from main.js)
+        function initialize() {
+            populateCategorySelector();
+            
+            elements.value.addEventListener('input', convertUnits);
+            elements.from.addEventListener('change', convertUnits);
+            elements.to.addEventListener('change', convertUnits);
+            elements.category.addEventListener('change', handleCategoryChange);
+            
+            convertUnits(); 
+        }
+
+        // Start the application
+        initialize();
+    </script>
+</body>
+</html>
