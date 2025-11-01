@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro JSON Formatter & Validator Tool</title>
+  <style>
+    :root {
+      --bg-light: #eef5ff;
+      --bg-dark: #0b1220;
+      --primary: #007bff;
+      --secondary: #0dcaf0;
+      --text-light: #111;
+      --text-dark: #f8f9fa;
+      --error: #ff4d4d;
+      --success: #00c853;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: var(--bg-light);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 30px;
+      transition: 0.3s ease;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    h1 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      transition: 0.3s;
+    }
+
+    body.dark .container {
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+    }
+
+    #input {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 15px;
+      outline: none;
+      resize: none;
+      background: #fff;
+      color: #222;
+      font-family: monospace;
+      white-space: pre-wrap;
+      transition: 0.3s;
+    }
+
+    body.dark #input {
+      background: #1e1e1e;
+      color: #eee;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+      justify-content: center;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary);
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: var(--secondary);
+    }
+
+    #output {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #eaf4ff;
+      font-family: monospace;
+      white-space: pre;
+      overflow-x: auto;
+      transition: 0.3s;
+      max-height: 400px;
+    }
+
+    body.dark #output {
+      background: #111a2a;
+      color: #cfd8dc;
+    }
+
+    #error {
+      color: var(--error);
+      font-weight: 600;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    #success {
+      color: var(--success);
+      text-align: center;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .file-input {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    input[type="file"] {
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    body.dark input[type="file"] {
+      background: #1e1e1e;
+      color: #eee;
+    }
+
+    .toggle-container {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+    }
+
+    .toggle {
+      appearance: none;
+      width: 52px;
+      height: 26px;
+      background: #ccc;
+      border-radius: 25px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle:checked {
+      background: var(--primary);
+    }
+
+    .toggle::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      transition: 0.3s;
+    }
+
+    .toggle:checked::before {
+      transform: translateX(24px);
+    }
+
+    /* JSON Highlighting */
+    .key { color: #00b0ff; }
+    .string { color: #43a047; }
+    .number { color: #fbc02d; }
+    .boolean { color: #ff7043; }
+    .null { color: #9e9e9e; }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      button { font-size: 14px; padding: 8px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toggle-container">
+    <input type="checkbox" id="themeToggle" class="toggle" />
+  </div>
+
+  <h1>💠 Pro JSON Formatter & Validator</h1>
+
+  <div class="container">
+    <textarea id="input" placeholder="Paste your JSON code here..."></textarea>
+
+    <div class="btn-group">
+      <button onclick="formatJSON()">Format & Validate</button>
+      <button onclick="minifyJSON()">Minify</button>
+      <button onclick="copyJSON()">Copy</button>
+      <button onclick="downloadJSON()">Download</button>
+      <button onclick="clearAll()">Clear</button>
+    </div>
+
+    <div class="file-input">
+      <input type="file" id="fileInput" accept=".json" onchange="uploadJSON(event)" />
+    </div>
+
+    <div id="error"></div>
+    <div id="success"></div>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const input = document.getElementById("input");
+    const output = document.getElementById("output");
+    const error = document.getElementById("error");
+    const success = document.getElementById("success");
+
+    document.getElementById("themeToggle").addEventListener("change", e => {
+      document.body.classList.toggle("dark", e.target.checked);
+    });
+
+    // Highlight JSON syntax
+    function syntaxHighlight(json) {
+      if (typeof json != "string") {
+        json = JSON.stringify(json, undefined, 2);
+      }
+      json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      return json.replace(
+        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+        function (match) {
+          let cls = "number";
+          if (/^"/.test(match)) {
+            cls = /:$/.test(match) ? "key" : "string";
+          } else if (/true|false/.test(match)) {
+            cls = "boolean";
+          } else if (/null/.test(match)) {
+            cls = "null";
+          }
+          return '<span class="' + cls + '">' + match + "</span>";
+        }
+      );
+    }
+
+    function formatJSON() {
+      error.textContent = "";
+      success.textContent = "";
+      output.innerHTML = "";
+      const text = input.value.trim();
+
+      if (!text) {
+        error.textContent = "⚠️ Please paste your JSON first.";
+        return;
+      }
+
+      try {
+        const obj = JSON.parse(text);
+        const formatted = JSON.stringify(obj, null, 2);
+        output.innerHTML = syntaxHighlight(formatted);
+        success.textContent = "✅ Valid JSON!";
+      } catch (e) {
+        error.textContent = "❌ Invalid JSON: " + e.message;
+      }
+    }
+
+    function minifyJSON() {
+      try {
+        const obj = JSON.parse(input.value);
+        output.textContent = JSON.stringify(obj);
+        success.textContent = "✅ Minified successfully!";
+      } catch (e) {
+        error.textContent = "❌ Invalid JSON.";
+      }
+    }
+
+    function copyJSON() {
+      const text = output.innerText;
+      if (!text) {
+        error.textContent = "⚠️ Nothing to copy!";
+        return;
+      }
+      navigator.clipboard.writeText(text);
+      success.textContent = "📋 Copied to clipboard!";
+    }
+
+    function downloadJSON() {
+      const text = output.innerText;
+      if (!text) {
+        error.textContent = "⚠️ Format JSON first!";
+        return;
+      }
+      const blob = new Blob([text], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "formatted.json";
+      a.click();
+    }
+
+    function clearAll() {
+      input.value = "";
+      output.innerText = "";
+      error.textContent = "";
+      success.textContent = "";
+    }
+
+    function uploadJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        input.value = event.target.result;
+        formatJSON();
+      };
+      reader.readAsText(file);
+    }
+
+    // Auto-validation while typing
+    input.addEventListener("input", () => {
+      try {
+        JSON.parse(input.value);
+        input.style.border = "2px solid var(--success)";
+      } catch {
+        input.style.border = "2px solid var(--error)";
+      }
+    });
+  </script>
+</body>
+</html>
