@@ -2,23 +2,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="favicon-16x16.png" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zynstro - Your Daily Tools, All in One Place</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS Reset and Base Styles */
+        /* CSS Variables */
         :root {
-            --primary-blue: #106FD5;
+            --primary-blue: #2563eb;
             --primary-dark: #1e40af;
             --primary-light: #3b82f6;
+            --accent-blue: #60a5fa;
+            --gradient-blue: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            --gradient-light: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            --gradient-ai: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
             --text-dark: #1e293b;
             --text-light: #64748b;
-            --background: #f8f8fc;
+            --background: #f8fafc;
             --card-bg: #ffffff;
-            --border-radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --transition: all 0.3s ease;
+            --card-hover: #ffffff;
+            --border-radius: 20px;
+            --border-radius-sm: 12px;
+            --border-radius-lg: 28px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-slow: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Dark Mode Variables */
+        .dark-mode {
+            --primary-blue: #3b82f6;
+            --primary-dark: #60a5fa;
+            --primary-light: #2563eb;
+            --accent-blue: #93c5fd;
+            --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            --gradient-light: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            --gradient-ai: linear-gradient(135deg, #a78bfa 0%, #60a5fa 100%);
+            --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            --text-dark: #f1f5f9;
+            --text-light: #cbd5e1;
+            --background: #0f172a;
+            --card-bg: #1e293b;
+            --card-hover: #1e293b;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
         }
 
         * {
