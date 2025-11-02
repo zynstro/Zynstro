@@ -1,254 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Advanced Unit Converter (Single File)</title>
-    
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --background-light: #f4f7f6;
-            --card-background: #ffffff;
-            --text-color: #333;
-            --input-bg: #f8f9fa;
-            --shadow-subtle: 0 6px 20px rgba(0, 0, 0, 0.08);
-            --transition-speed: 0.2s;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🌍 Premium World Clock & Time Zone Converter</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--background-light);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: var(--text-color);
-        }
+    :root {
+      --primary: #007bff;
+      --accent: #00e0ff;
+      --bg-light: #eaf4ff;
+      --bg-dark: #0d1117;
+      --text-light: #222;
+      --text-dark: #f1f1f1;
+      --card-light: rgba(255, 255, 255, 0.85);
+      --card-dark: rgba(30, 30, 45, 0.9);
+      --glass: blur(12px) saturate(180%);
+    }
 
-        .container {
-            background: var(--card-background);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: var(--shadow-subtle);
-            max-width: 420px;
-            width: 90%;
-            text-align: center;
-        }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      transition: background 0.5s ease, color 0.5s ease;
+      background-image: radial-gradient(circle at top, #cde7ff, #eef8ff 80%);
+    }
 
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      background-image: radial-gradient(circle at top left, #111827, #0d1117 80%);
+    }
 
-        .input-group, .select-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            align-items: center;
-        }
+    .container {
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      background: var(--card-light);
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      width: 95%;
+      max-width: 800px;
+      transition: all 0.5s ease;
+      text-align: center;
+    }
 
-        .input-group label {
-            width: 80px;
-            text-align: left;
-            font-weight: 500;
-        }
+    body.dark .container {
+      background: var(--card-dark);
+    }
 
-        input, select {
-            flex-grow: 1;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-            background-color: var(--input-bg);
-            transition: border-color var(--transition-speed);
-        }
+    h2 {
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-        }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
 
-        .result {
-            margin-top: 30px;
-            padding: 15px;
-            border-radius: 10px;
-            background: var(--primary-color);
-            color: white;
-            font-size: 1.2em;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
-        }
-        
-        #unitCategory {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-    </style>
+    label {
+      font-weight: 600;
+      font-size: 14px;
+      text-align: left;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s;
+      background: rgba(255,255,255,0.8);
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .clock {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    .map-container {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      margin-top: 25px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Mercator_projection_SW.jpg/1024px-Mercator_projection_SW.jpg') center/cover no-repeat;
+      box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+    }
+
+    .glow {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      background: radial-gradient(circle, rgba(0,255,255,0.8), transparent 70%);
+      border-radius: 50%;
+      transition: all 0.5s ease;
+    }
+
+    .dark-toggle {
+      position: absolute;
+      top: 25px;
+      right: 30px;
+      background: none;
+      border: 2px solid var(--primary);
+      border-radius: 50%;
+      color: var(--primary);
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .dark-toggle:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in { animation: fadeIn 0.6s ease; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Unit Converter</h2>
-        
-        <select id="unitCategory"></select>
+  <button class="dark-toggle" id="themeToggle">🌙</button>
 
-        <div class="input-group">
-            <label for="inputValue">Value:</label>
-            <input type="number" id="inputValue" placeholder="Enter value" value="1" />
-        </div>
+  <div class="container fade-in">
+    <h2>🌎 World Clock & Time Zone Converter</h2>
+    <p style="font-size:14px;opacity:0.8;">Convert time instantly between any two cities with live preview and world map glow.</p>
 
-        <div class="select-group">
-            <label for="fromUnit">From:</label>
-            <select id="fromUnit"></select>
-        </div>
+    <input type="datetime-local" id="dateInput">
 
-        <div class="select-group">
-            <label for="toUnit">To:</label>
-            <select id="toUnit"></select>
-        </div>
-        
-        <div class="result" id="resultBox"></div>
+    <div class="grid">
+      <div>
+        <label>From Time Zone</label>
+        <select id="fromZone"></select>
+        <div class="clock" id="fromClock"></div>
+      </div>
+
+      <div>
+        <label>To Time Zone</label>
+        <select id="toZone"></select>
+        <div class="clock" id="toClock"></div>
+      </div>
     </div>
 
-    <script>
-        // Data model for all conversions (from converter-logic.js)
-        const conversionData = {
-            length: {
-                baseUnit: 'meters',
-                units: {
-                    meters: { symbol: 'm', factor: 1 },
-                    kilometers: { symbol: 'km', factor: 1000 },
-                    feet: { symbol: 'ft', factor: 0.3048 },
-                    inches: { symbol: 'in', factor: 0.0254 },
-                    miles: { symbol: 'mi', factor: 1609.34 },
-                }
-            },
-            temperature: {
-                isSpecial: true,
-                baseUnit: 'celsius',
-                units: {
-                    celsius: { symbol: '°C' },
-                    fahrenheit: { symbol: '°F' },
-                    kelvin: { symbol: 'K' }
-                }
-            },
-            volume: {
-                baseUnit: 'liters',
-                units: {
-                    liters: { symbol: 'L', factor: 1 },
-                    milliliters: { symbol: 'mL', factor: 0.001 },
-                    gallons_us: { symbol: 'gal (US)', factor: 3.78541 },
-                    cubic_meters: { symbol: 'm³', factor: 1000 },
-                }
-            }
-        };
+    <button onclick="convertTime()">Convert Now</button>
+    <div class="result" id="outputResult"></div>
 
-        // DOM element references (from main.js)
-        const elements = {
-            category: document.getElementById("unitCategory"),
-            value: document.getElementById("inputValue"),
-            from: document.getElementById("fromUnit"),
-            to: document.getElementById("toUnit"),
-            resultBox: document.getElementById("resultBox"),
-        };
+    <div class="map-container">
+      <div class="glow" id="fromGlow"></div>
+      <div class="glow" id="toGlow"></div>
+    </div>
+  </div>
 
-        let currentCategory = 'length';
+  <script>
+    const fromZone = document.getElementById("fromZone");
+    const toZone = document.getElementById("toZone");
+    const fromClock = document.getElementById("fromClock");
+    const toClock = document.getElementById("toClock");
+    const fromGlow = document.getElementById("fromGlow");
+    const toGlow = document.getElementById("toGlow");
+    const themeToggle = document.getElementById("themeToggle");
 
-        // Special conversion logic (from converter-logic.js)
-        function handleSpecialConversion(value, from, to) {
-            function toCelsius(unit, val) {
-                if (unit === 'celsius') return val;
-                if (unit === 'fahrenheit') return (val - 32) * 5 / 9;
-                if (unit === 'kelvin') return val - 273.15;
-                return 0;
-            }
+    const cities = [
+      { name: "Karachi, Pakistan", zone: "Asia/Karachi", x: 600, y: 100 },
+      { name: "Islamabad, Pakistan", zone: "Asia/Karachi", x: 590, y: 95 },
+      { name: "London, UK", zone: "Europe/London", x: 400, y: 70 },
+      { name: "New York, USA", zone: "America/New_York", x: 230, y: 100 },
+      { name: "Tokyo, Japan", zone: "Asia/Tokyo", x: 830, y: 110 },
+      { name: "Dubai, UAE", zone: "Asia/Dubai", x: 520, y: 110 },
+      { name: "Sydney, Australia", zone: "Australia/Sydney", x: 880, y: 200 },
+      { name: "Toronto, Canada", zone: "America/Toronto", x: 240, y: 90 },
+      { name: "Paris, France", zone: "Europe/Paris", x: 430, y: 80 },
+      { name: "Beijing, China", zone: "Asia/Shanghai", x: 720, y: 95 }
+    ];
 
-            function fromCelsius(unit, val) {
-                if (unit === 'celsius') return val;
-                if (unit === 'fahrenheit') return (val * 9 / 5) + 32;
-                if (unit === 'kelvin') return val + 273.15;
-                return 0;
-            }
+    // Populate city dropdowns
+    cities.forEach(city => {
+      const opt1 = document.createElement("option");
+      const opt2 = document.createElement("option");
+      opt1.value = opt2.value = city.zone;
+      opt1.textContent = "⭐ " + city.name;
+      opt2.textContent = "⭐ " + city.name;
+      fromZone.appendChild(opt1);
+      toZone.appendChild(opt2);
+    });
 
-            const celsiusValue = toCelsius(from, value);
-            return fromCelsius(to, celsiusValue);
-        }
+    fromZone.value = "Asia/Karachi";
+    toZone.value = "Europe/London";
 
-        // Core conversion logic (merged from main.js and converter-logic.js)
-        function convertUnits() {
-            const categoryData = conversionData[currentCategory];
-            const value = parseFloat(elements.value.value);
-            const from = elements.from.value;
-            const to = elements.to.value;
+    function updateClock() {
+      const now = new Date();
+      fromClock.textContent = "Local Time: " + now.toLocaleTimeString("en-US", { timeZone: fromZone.value });
+      toClock.textContent = "Local Time: " + now.toLocaleTimeString("en-US", { timeZone: toZone.value });
+      requestAnimationFrame(updateClock);
+    }
+    updateClock();
 
-            if (isNaN(value)) {
-                elements.resultBox.textContent = "Please enter a valid number.";
-                return;
-            }
-            
-            let convertedValue;
+    function convertTime() {
+      const dateInput = document.getElementById("dateInput").value;
+      const output = document.getElementById("outputResult");
 
-            if (categoryData.isSpecial) {
-                convertedValue = handleSpecialConversion(value, from, to);
-            } else {
-                const fromFactor = categoryData.units[from].factor;
-                const toFactor = categoryData.units[to].factor;
-                const baseUnitValue = value * fromFactor; 
-                convertedValue = baseUnitValue / toFactor;
-            }
+      if (!dateInput) {
+        output.textContent = "⚠️ Please select a date and time.";
+        return;
+      }
 
-            const fromSymbol = categoryData.units[from].symbol || from;
-            const toSymbol = categoryData.units[to].symbol || to;
+      const from = fromZone.value;
+      const to = toZone.value;
+      const date = new Date(dateInput);
+      const sourceTime = new Date(date.toLocaleString("en-US", { timeZone: from }));
+      const convertedTime = new Date(sourceTime.toLocaleString("en-US", { timeZone: to }));
 
-            const formattedResult = convertedValue.toFixed(4).replace(/\.?0+$/, "");
-            elements.resultBox.textContent = `${value} ${fromSymbol} = ${formattedResult} ${toSymbol}`;
-        }
-        
-        // UI population functions (from main.js)
-        function populateCategorySelector() {
-            const categories = Object.keys(conversionData);
-            elements.category.innerHTML = categories.map(key => 
-                `<option value="${key}">${key.charAt(0).toUpperCase() + key.slice(1)}</option>`
-            ).join('');
-            
-            elements.category.value = currentCategory;
-            populateUnitSelectors();
-        }
+      output.textContent = `🕒 ${convertedTime.toLocaleString()} (${to})`;
+      moveGlow(from, to);
+    }
 
-        function populateUnitSelectors() {
-            const units = conversionData[currentCategory].units;
-            const unitOptions = Object.keys(units).map(unitKey => 
-                `<option value="${unitKey}">${unitKey.replace(/_/g, ' ').toUpperCase()}</option>`
-            ).join('');
+    // Move glowing dots on world map
+    function moveGlow(from, to) {
+      const fromCity = cities.find(c => c.zone === from);
+      const toCity = cities.find(c => c.zone === to);
 
-            elements.from.innerHTML = unitOptions;
-            elements.to.innerHTML = unitOptions;
-            
-            convertUnits(); 
-        }
+      if (fromCity) {
+        fromGlow.style.left = fromCity.x + "px";
+        fromGlow.style.top = fromCity.y + "px";
+      }
+      if (toCity) {
+        toGlow.style.left = toCity.x + "px";
+        toGlow.style.top = toCity.y + "px";
+      }
+    }
 
-        function handleCategoryChange(event) {
-            currentCategory = event.target.value;
-            populateUnitSelectors();
-        }
-
-        // Initialize and attach event listeners (from main.js)
-        function initialize() {
-            populateCategorySelector();
-            
-            elements.value.addEventListener('input', convertUnits);
-            elements.from.addEventListener('change', convertUnits);
-            elements.to.addEventListener('change', convertUnits);
-            elements.category.addEventListener('change', handleCategoryChange);
-            
-            convertUnits(); 
-        }
-
-        // Start the application
-        initialize();
-    </script>
+    // Theme switch
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+    });
+  </script>
 </body>
 </html>
