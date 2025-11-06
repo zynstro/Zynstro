@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zynstro Auto Sitemap Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef8ff;
+      padding: 30px;
+      text-align: center;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    textarea {
+      width: 90%;
+      height: 300px;
+      margin-top: 15px;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      resize: none;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #0078d7;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🗺️ Zynstro Sitemap Generator</h1>
+  <p>This tool automatically generates an XML sitemap from your website: <b>https://www.zynstro.xyz</b></p>
+  <button onclick="generate()">Generate Sitemap</button>
+
+  <textarea id="output" placeholder="Your sitemap.xml will appear here..."></textarea>
+  <button id="downloadBtn" style="display:none;" onclick="download()">📥 Download sitemap.xml</button>
+
+  <script>
+    async function generate() {
+      const baseUrl = "https://www.zynstro.xyz";
+
+      try {
+        const res = await fetch(baseUrl);
+        const text = await res.text();
+
+        // Parse and extract internal links
+        const links = [...new Set(
+          Array.from(new DOMParser().parseFromString(text, 'text/html').querySelectorAll('a'))
+            .map(a => a.href)
+            .filter(href => href.startsWith(baseUrl))
+        )];
+
+        if (links.length === 0) {
+          alert("No internal links found. Your site may be dynamic or use JavaScript navigation.");
+          return;
+        }
+
+        let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+        xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+        links.forEach(link => {
+          xml += `  <url>\n    <loc>${link}</loc>\n  </url>\n`;
+        });
+
+        xml += `</urlset>`;
+
+        document.getElementById('output').value = xml;
+        document.getElementById('downloadBtn').style.display = 'inline-block';
+      } catch (e) {
+        alert('❌ Error: Unable to fetch your website data. Please make sure the URL is correct and public.');
+      }
+    }
+
+    function download() {
+      const text = document.getElementById('output').value;
+      const blob = new Blob([text], { type: 'application/xml' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'sitemap.xml';
+      a.click();
+    }
+  </script>
+</body>
+</html>
