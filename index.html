@@ -37,11 +37,12 @@
     
     <!-- Favicon -->
     <link rel="icon" href="favicon-16x16.png" type="image/x-icon">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     
     <title>Zynstro - Free Online Tools: Image Converter, PDF Tools, Calculators & Text Tools</title>
     
     <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" crossorigin="anonymous">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
     
     <!-- DNS Prefetch for External Domains -->
@@ -51,7 +52,7 @@
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
@@ -106,6 +107,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -123,6 +128,7 @@
             cursor: pointer;
             border: none;
             font-family: inherit;
+            background: transparent;
         }
 
         .container {
@@ -1093,18 +1099,19 @@
         </section>
 
         <!-- Ad Container -->
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9028086384434844"
-     crossorigin="anonymous"></script>
-<!-- Main Page ADs -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-9028086384434844"
-     data-ad-slot="7088134633"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+        <div class="ad-container">
+            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9028086384434844"
+                crossorigin="anonymous"></script>
+            <!-- Main Page ADs -->
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-9028086384434844"
+                data-ad-slot="7088134633"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+            <script>
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
         </div>
 
         <!-- Text Tools -->
@@ -1309,16 +1316,16 @@
                     <p class="footer-tagline">Simplifying your digital life with powerful, easy-to-use tools.</p>
                     <div class="contact-email">zynstro786@gmail.com</div>
                     <div class="social-links">
-                        <a href="https://x.com/Zynstro" class="social-link">
+                        <a href="https://x.com/Zynstro" class="social-link" aria-label="Twitter">
                             <i class="fab fa-x"></i>
                         </a>
-                        <a href="#" class="social-link">
+                        <a href="#" class="social-link" aria-label="Facebook">
                             <i class="fab fa-facebook-f"></i>
                         </a>
-                        <a href="https://www.instagram.com/zynstro" class="social-link">
+                        <a href="https://www.instagram.com/zynstro" class="social-link" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://www.youtube.com/@ZynstroOfficial" class="social-link">
+                        <a href="https://www.youtube.com/@ZynstroOfficial" class="social-link" aria-label="YouTube">
                             <i class="fab fa-youtube"></i>
                         </a>
                     </div>
@@ -1334,22 +1341,10 @@
                 <p>&copy; 2025 Zynstro. All rights reserved.</p>
             </div>
         </div>
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9028086384434844"
-     crossorigin="anonymous"></script>
-<!-- Main Page ADs -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-9028086384434844"
-     data-ad-slot="7088134633"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
     </footer>
 
     <!-- Scroll to top button -->
-    <button class="scroll-to-top" id="scroll-to-top">
+    <button class="scroll-to-top" id="scroll-to-top" aria-label="Scroll to top">
         <i class="fas fa-chevron-up"></i>
     </button>
 
@@ -1360,6 +1355,13 @@
         
         hamburger.addEventListener('click', () => {
             navMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('#nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+            });
         });
 
         // Theme Toggle
